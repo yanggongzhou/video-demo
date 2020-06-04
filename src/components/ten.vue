@@ -12,11 +12,13 @@
 
 
       <img v-show="previewShow" class="preview" src="https://images.magicscorp.com/Mimg/other/mpreview.jpg" alt="">
-
-      <video v-show="previewShow" ref="myVideo" class="preview-video" muted autoplay name="media">
+<!--      muted autoplay-->
+      <video v-show="previewShow" ref="myVideo" class="preview-video" autoplay :muted="videoMuted"  name="media" loop='loop'>
         <source src="https://videos.magicscorp.com/Mvideo/advertisement/ten_first.mp4" type="video/mp4">
       </video>
       <mt-button v-show="previewShow" class="skipBtn" type="default" plain size="small" @click="skipVideo">跳过&nbsp;&nbsp;{{remainingTime}}</mt-button>
+      <img v-show="previewShow" @click.stop="syImgChange" class="syImg" :src="syImg" alt="">
+
     </div>
   </div>
 </template>
@@ -24,18 +26,22 @@
   export default {
     data(){
       return{
+        syImg:require('../assets/jingyin.png'),
         remainingTime:'5s',
         previewShow:true,
         contentVideoEndShow:false,
-
+        videoMuted:true,
       }
     },
     mounted() {
       let self = this;
       let myVideo = this.$refs.myVideo
+
+
       this.$refs.myVideo.addEventListener('canplay', function(e) {
         console.log('提示该视频已准备好开始播放')
         console.log(e.timeStamp)
+
         var i =5;
        let myint = setInterval(()=>{
          i--
@@ -74,24 +80,6 @@
       //封面视频结束
       this.$refs.myVideo.onended = function() {
        console.log('video-end')
-        myVideo.removeEventListener('canplay', function(e) {
-          console.log('提示该视频已准备好开始播放')
-          console.log(e.timeStamp)
-          var i =5;
-          let myint = setInterval(()=>{
-            i--
-            self.remainingTime = i+'s'
-            if(!i){
-              clearInterval(myint)
-            }
-          },1000)
-
-          //控制时长
-          setTimeout(() => {
-            myVideo.src = ''
-            self.previewShow= false
-          }, 6000)
-        },true)
       };
       //内层视频结束
       this.$refs.myVideo5s.onended = function() {
@@ -110,7 +98,16 @@
       contentVideoPlay(){
         this.$refs.myVideo5s.play();
       },
+      syImgChange(){
+        if(this.videoMuted){
+          this.videoMuted = false
+          this.syImg = require('../assets/shengyin.png')
+        }else{
+          this.videoMuted = true
+          this.syImg = require('../assets/jingyin.png')
+        }
 
+      },
     }
   }
 </script>
@@ -176,9 +173,16 @@
     position: absolute;
     z-index: 14;
     top: 59px;
-    right: 35px;
+    right: 46px;
     border: none;
     color: #b3afaf;
+  }
+  .syImg{
+    position: absolute;
+    z-index: 14;
+    top: 70px;
+    right: 30px;
+    width: 14px;
   }
 }
 </style>
